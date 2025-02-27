@@ -4,6 +4,7 @@ import "./globals.css";
 import {
   ClerkProvider,
 } from '@clerk/nextjs'
+import { TRPCProvider } from "@/trpc/client";
 
 const inter = Inter({ subsets: ['latin']})
 
@@ -23,7 +24,9 @@ export default function RootLayout({
         <body
           className={inter.className}
         >
-          {children}
+          <TRPCProvider>
+            {children}
+          </TRPCProvider>
         </body>
       </html>
     </ClerkProvider>
