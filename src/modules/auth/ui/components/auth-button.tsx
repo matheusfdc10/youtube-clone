@@ -1,14 +1,32 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
-import { UserCircleIcon } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { SignedIn, SignedOut, SignInButton, UserButton, useAuth } from "@clerk/nextjs"
+import { ClapperboardIcon, UserCircleIcon } from "lucide-react"
 
 export const AuthButton = () => {
+    const { isLoaded } = useAuth();
+    
+    if (!isLoaded) {
+        return (
+            <Skeleton className="w-7 h-7 rounded-full" />
+        )
+    }
+
     return (
         <>
             <SignedIn>
-                <UserButton />
+                <UserButton>
+                    <UserButton.MenuItems>
+                        <UserButton.Link 
+                            label="Studio"
+                            href="/studio"
+                            labelIcon={<ClapperboardIcon  className="size-4"/>}
+                        />
+                        <UserButton.Action label="manageAccount"/>
+                    </UserButton.MenuItems>
+                </UserButton>
                 {/* Add menu items for studio and user profile */}
             </SignedIn>
             <SignedOut>
