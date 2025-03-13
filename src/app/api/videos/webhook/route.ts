@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { mux } from "@/lib/mux";
 import { db } from "@/db";
 import { videos } from "@/db/schema";
+import { UTApi } from "uploadthing/server";
 
 const SIGNIN_SECRET = process.env.MUX_WEBHOOK_SECRET!;
 
@@ -21,7 +22,7 @@ export const POST = async (request: Request) => {
         return new Response("No signature found", { status: 401 });
     }
 
-    const payload = await request.json();
+    const payload = await request?.json();
     const body = JSON.stringify(payload);
 
     mux.webhooks.verifySignature(
@@ -61,10 +62,23 @@ export const POST = async (request: Request) => {
                 return new Response("Missing playback ID", { status: 400 });
             }
 
-            const thumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg`;
-            const previewUrl = `https://image.mux.com/${playbackId}/animated.gif`;
-
+            const tempThumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg`;
+            const tempPreviewUrl = `https://image.mux.com/${playbackId}/animated.gif`;
             const duration = data.duration ? Math.round(data.duration * 1000) : 0;
+
+            const utapi = new UTApi();
+            const [uploadThumbnail, uploadPreview] = await utapi.uploadFilesFromUrl([
+                tempThumbnailUrl,
+                tempPreviewUrl,
+            ])
+
+            if (!uploadThumbnail.data || !uploadPreview.data) {
+                return new Response("Failed to upload thumbnail or preview", { status: 500 });
+            }
+
+            const { key: thumbnailKey, url: thumbnailUrl } = uploadThumbnail.data;
+            const { key: previewKey, url: previewUrl } = uploadPreview.data;
+
 
             await db
                 .update(videos)
@@ -73,7 +87,9 @@ export const POST = async (request: Request) => {
                     muxPlaybackId: playbackId,
                     muxAssetId: data.id,
                     thumbnailUrl,
+                    thumbnailKey,
                     previewUrl,
+                    previewKey,
                     duration,
                 })
                 .where(eq(videos.muxUploadId, data.upload_id))
@@ -101,9 +117,18 @@ export const POST = async (request: Request) => {
                 return new Response("Missing upload ID", { status: 400 });
             }
 
-            await db
+
+            const [removedVideo] = await db
                 .delete(videos)
-                .where(eq(videos.muxUploadId, data.upload_id));
+                .where(eq(videos.muxUploadId, data.upload_id))
+                .returning();
+
+            if (removedVideo.thumbnailKey && removedVideo.previewKey) {
+                const utapi = new UTApi();
+                    
+                await utapi.deleteFiles([removedVideo.thumbnailKey, removedVideo.previewKey]);
+            }
+            
 
             break
         }
