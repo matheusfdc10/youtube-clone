@@ -22,7 +22,7 @@ export const POST = async (request: Request) => {
         return new Response("No signature found", { status: 401 });
     }
 
-    const payload = await request?.json();
+    const payload = await request.json();
     const body = JSON.stringify(payload);
 
     mux.webhooks.verifySignature(
@@ -76,8 +76,8 @@ export const POST = async (request: Request) => {
                 return new Response("Failed to upload thumbnail or preview", { status: 500 });
             }
 
-            const { key: thumbnailKey, url: thumbnailUrl } = uploadThumbnail.data;
-            const { key: previewKey, url: previewUrl } = uploadPreview.data;
+            const { key: thumbnailKey, ufsUrl: thumbnailUrl } = uploadThumbnail.data;
+            const { key: previewKey, ufsUrl: previewUrl } = uploadPreview.data;
 
 
             await db
@@ -117,18 +117,16 @@ export const POST = async (request: Request) => {
                 return new Response("Missing upload ID", { status: 400 });
             }
 
-
             const [removedVideo] = await db
                 .delete(videos)
                 .where(eq(videos.muxUploadId, data.upload_id))
                 .returning();
 
-            if (removedVideo.thumbnailKey && removedVideo.previewKey) {
+            if (removedVideo?.thumbnailKey && removedVideo?.previewKey) {
                 const utapi = new UTApi();
                     
                 await utapi.deleteFiles([removedVideo.thumbnailKey, removedVideo.previewKey]);
             }
-            
 
             break
         }
