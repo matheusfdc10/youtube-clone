@@ -107,13 +107,14 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     const [thumbnailGenerateModalOpen, setThumbnailGenerateModalOpen] = useState(false);
 
     const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId })
-    const [categories] = trpc.categories.getMany.useSuspenseQuery()
-
+    const [categories] = trpc.categories.getMany.useSuspenseQuery();
+    
     const update = trpc.videos.update.useMutation({
-        onSuccess: () => {
+        onSuccess: (data) => {
             utils.studio.getMany.invalidate();
-            utils.studio.getOne.invalidate({ id: videoId })
-            toast.success("Video updated")
+            utils.studio.getOne.invalidate({ id: videoId });
+            form.reset(data);
+            toast.success("Video updated");
         },
         onError: () => {
             toast.error("Something went wrong")
