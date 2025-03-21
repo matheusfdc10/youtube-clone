@@ -5,9 +5,70 @@ import { VideoMenu } from "./video-menu";
 import { VideoOwner } from "./video-owner";
 import { VideoReactions } from "./video-reactions";
 import { formatDistanceToNow, format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VideoTopRowProps {
     video: VideoGetOneOutPut;
+}
+
+export const VideoTopRowSkeleton = () => {
+    return (
+        <div className="flex flex-col gap-4 mt-4">
+            <Skeleton className="h-6 w-4/5 md:w-2/5"/>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="flex items-center sm:items-start justify-between sm:justify-start gap-3">
+                <div>
+                    <div className="flex items-center gap-3 min-w-0">
+                        <Skeleton className="w-10 h-10 rounded-full shrink-0"/>
+                        <div className="flex flex-col gap-1 min-w-0">
+                            <div className="flex flex-col gap-2 w-full">
+                                <Skeleton className="h-5 w-32 md:w-32 lg:w-44"/>
+                                <Skeleton className="h-5 w-24"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <Skeleton className="h-9 w-24 rounded-full"/>
+            </div>
+                <div className="flex overflow-x-auto sm:justify-end sm:overflow-visible pb-2 -mb-2 sm:pb-0 sm:mb-0 gap-2">
+                    <div className="flex items-center flex-none">
+                        <Skeleton className="h-9 w-32 rounded-full"/>
+                    </div>
+                    <Skeleton className="h-9 w-9 rounded-full"/>
+                </div>
+            </div>
+            <div className="w-full bg-secondary/50 rounded-xl p-3">
+                <div className="flex flex-col gap-2 mb-2">
+                    <Skeleton className="h-6 w-52"/>
+                    <Skeleton className="h-10 w-full"/>
+                </div>
+                <div className="relative">
+                    <div className="flex items-center gap-1 mt-4 text-sm font-medium">
+                        <Skeleton className="h-5 w-24"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+
+    return (
+        <div className="flex flex-col gap-4 mt-4">
+            <div className="flex flex-col gap-2">
+                <Skeleton className="h-6 w-4/5 md:w-2/5"/>
+            </div>
+            <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-3 w-[70%]">
+                    <Skeleton className="w-10 h-10 rounded-full shrink-0"/>
+                    <div className="flex flex-col gap-2 w-full">
+                        <Skeleton className="h-5 w-4/5 md:w-2/6"/>
+                        <Skeleton className="h-5 w-3/5 md:w-1/5"/>
+                    </div>
+                </div>
+                <Skeleton className="h-9 w-2/6 md:w-1/6 rounded-full"/>
+            </div>
+            <div className="h-[120px] w-full"/>
+        </div>
+    )
 }
 
 export const VideoTopRow = ({ video }: VideoTopRowProps) => {
