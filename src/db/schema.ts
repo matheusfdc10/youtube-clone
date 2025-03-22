@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { integer, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 
@@ -117,7 +117,7 @@ export const comments = pgTable("comments", {
     videoId: uuid("video_id").references(() => videos.id, { onDelete: "cascade" }).notNull(),
     value: text("value").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").$onUpdate(() => new Date()).default(sql`NULL`),
 })
 
 export const commentRelations = relations(comments, ({ one }) => ({
