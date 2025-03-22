@@ -2,12 +2,10 @@
 
 import { InfiniteScroll } from "@/components/infinite-scroll";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserAvatar } from "@/components/user-avatar";
 import { DEFAULT_LIMIT } from "@/constants";
 import { CommentForm } from "@/modules/comments/ui/components/comment-form";
 import { CommentItem } from "@/modules/comments/ui/components/comment-item";
 import { trpc } from "@/trpc/client";
-import { useUser } from "@clerk/nextjs";
 import { Loader2Icon } from "lucide-react";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -54,8 +52,6 @@ const CommentsSectionSkeleton = () => {
 }
 
 const CommentsSectionSuspense = ({ videoId }: CommentsSectionProps) => {
-    const { user } = useUser();
-
     const [comments, query] = trpc.comments.getMany.useSuspenseInfiniteQuery({ videoId, limit: DEFAULT_LIMIT },
         {
             getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -68,14 +64,7 @@ const CommentsSectionSuspense = ({ videoId }: CommentsSectionProps) => {
                 <h1 className="text-xl font-bold">
                     {comments.pages[0].totalCount} Comments
                 </h1>
-                <div className="flex gap-4 group">
-                    <UserAvatar 
-                        size="lg"
-                        imageUrl={user?.imageUrl || "/user-placeholder.svg"}
-                        name={user?.username || "User"}
-                    />
-                    <CommentForm videoId={videoId} />
-                </div>
+                <CommentForm videoId={videoId} />
             </div>
             <div className="flex flex-col gap-4 mt-2">
                 {comments.pages.flatMap((page) => page.items).map((comment) => (

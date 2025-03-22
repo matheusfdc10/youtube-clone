@@ -5,31 +5,36 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Textarea } from "@/components/ui/textarea";
 import { commentInsertSchema } from "@/db/schema";
 import { trpc } from "@/trpc/client";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { CommentGetManyOutPut } from "../../types";
 import { useEffect, useRef } from "react";
+import { UserAvatar } from "@/components/user-avatar";
 
 interface CommentFormProps {
     videoId: string;
+    parentId?: string;
     comment?: CommentGetManyOutPut[number];
     onSuccess?: () => void;
     onCancel?: () => void;
+    variant?: "comment" | "reply" | "update",
 }
 
 const schema = commentInsertSchema.omit({ userId: true })
 
 export const CommentForm = ({ 
-    videoId, 
+    videoId,
+    parentId,
     comment,
     onSuccess,
-    onCancel
+    onCancel,
+    variant = "comment",
 }: CommentFormProps) => {
     const clerk = useClerk();
-    // const { user } = useUser();
+    const { user } = useUser();
 
     const utils = trpc.useUtils();
     const create = trpc.comments.create.useMutation({
@@ -69,12 +74,13 @@ export const CommentForm = ({
         resolver: zodResolver(schema),
         defaultValues: {
             videoId,
+            parentId,
             value: comment?.value || "",
         }
     })
 
     const handleSubmit = (values: z.infer<typeof schema>) => {
-        if (comment) {
+        if (variant === "update" && comment) {
             update.mutate({ 
                 id: comment.id,
                 value: values.value, 
@@ -84,6 +90,13 @@ export const CommentForm = ({
         }
     }
 
+    const placeholder = variant === "reply" ? "Reply to this comment..." : variant === "update" ? "Update comment..." : "Add a comment...";
+    const textButtonSubmit = variant === "reply" ? "Reply" : variant === "update" ? "Save" : "Comment";
+
+    const handleCancel = () => {
+        form.reset();
+        onCancel?.();
+    }
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -99,8 +112,8 @@ export const CommentForm = ({
         }
     }, [comment]);
 
-
     const value = form.watch("value");
+
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
@@ -112,16 +125,15 @@ export const CommentForm = ({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleSubmit)} 
-                // className="flex gap-4 group"
-                className="w-full"
+                className="flex gap-4 group"
             >
-                {/* <UserAvatar 
-                    size="lg"
+                <UserAvatar 
+                    size={variant === "comment" ? "lg" : "sm"}
                     imageUrl={user?.imageUrl || "/user-placeholder.svg"}
                     name={user?.username || "User"}
-                /> */}
+                />
                 <div 
-                    // className="flex-1"
+                    className="flex-1"
                 >
                     <FormField
                         name="value"
@@ -132,7 +144,7 @@ export const CommentForm = ({
                                     <Textarea
                                         {...field}
                                         ref={textareaRef}
-                                        placeholder={comment ? "Edit a comment..." :"Add a comment..."}
+                                        placeholder={placeholder}
                                         className="resize-none bg-transparent overflow-hidden min-h-0"
                                     />
                                 </FormControl>
@@ -143,7 +155,7 @@ export const CommentForm = ({
                     <div className="flex justify-end gap-2 mt-2">
                         {onCancel && (
                             <Button
-                                onClick={onCancel}
+                                onClick={handleCancel}
                                 disabled={create.isPending || update.isPending}
                                 type="button"
                                 variant="ghost"
@@ -157,7 +169,7 @@ export const CommentForm = ({
                             type="submit"
                             size="sm"
                         >
-                            {comment ? "Save" : "Comment"}
+                            {textButtonSubmit}
                         </Button>
                     </div>
                 </div>
