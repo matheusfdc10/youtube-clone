@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/trpc/client";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreVerticalIcon, Trash2Icon, PencilIcon, FlagIcon } from "lucide-react";
+import { MoreVerticalIcon, Trash2Icon, PencilIcon, FlagIcon, ThumbsUpIcon, ThumbsDownIcon } from "lucide-react";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { CommentForm } from "./comment-form";
@@ -36,6 +36,31 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
             }
         }
     });
+
+    const like = trpc.commentReactions.like.useMutation({
+        onSuccess: () => {
+            utils.comments.getMany.invalidate({ videoId: comment.videoId })
+        },
+        onError: (error) => {
+            toast.error("Something went wrong")
+            if (error.data?.code === "UNAUTHORIZED") {
+                clerk.openSignIn();
+            }
+        }
+    });
+    const dislike = trpc.commentReactions.dislike.useMutation(
+        {
+            onSuccess: () => {
+                utils.comments.getMany.invalidate({ videoId: comment.videoId })
+            },
+            onError: (error) => {
+                toast.error("Something went wrong")
+                if (error.data?.code === "UNAUTHORIZED") {
+                    clerk.openSignIn();
+                }
+            }
+        }
+    );
 
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const [isClamped, setIsClamped] = useState(false);
@@ -73,19 +98,20 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
                 ) : (
                     <>
                         <div className="flex-1 min-w-0">
-                            <Link href={`/users/${comment.userId}`}>
-                                <div className="flex items-center gap-2 mb-0.5">
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <Link href={`/users/${comment.userId}`}>
                                     <span className="font-medium text-sm pb-0.5">
                                         {comment.user.name}
                                     </span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {formatDistanceToNow(comment.createdAt, {
-                                            addSuffix: true,
-                                        })}
-                                        {comment.updatedAt && " (edited)"}
-                                    </span>
-                                </div>
-                            </Link>
+                                </Link>
+                                <span className="text-xs text-muted-foreground">
+                                    {formatDistanceToNow(comment.createdAt, {
+                                        addSuffix: true,
+                                    })}
+                                    {comment.updatedAt && " (edited)"}
+                                </span>
+                            </div>
+                            
                             <p 
                                 ref={paragraphRef}
                                 className={cn(
@@ -111,6 +137,47 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
                                     )}
                                 </div>
                             )}
+                            <div className="flex items-center gap-2 mt-1">
+                                <div className="flex items-center">
+                                    <Button
+                                        onClick={() => like.mutate({ commentId: comment.id })}
+                                        disabled={like.isPending || dislike.isPending}
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-8"
+                                    >
+                                        <ThumbsUpIcon className={cn(
+                                            comment.viewerReaction === "like" && "fill-black"
+                                        )}/>
+                                    </Button>
+                                    <span className="text-xs text-muted-foreground">
+                                        {comment.likeCount}
+                                    </span>
+                                    <Button
+                                        onClick={() => dislike.mutate({ commentId: comment.id })}
+                                        disabled={dislike.isPending || like.isPending}
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-8"
+                                    >
+                                        <ThumbsDownIcon className={cn(
+                                            comment.viewerReaction === "dislike" && "fill-black"
+                                        )}/>
+                                    </Button>
+                                    <span className="text-xs text-muted-foreground">
+                                        {comment.dislikeCount}
+                                    </span>
+                                    <Button
+                                        onClick={() => {}}
+                                        disabled={false}
+                                        variant="ghost"
+                                        size="sm"
+                                        className="ml-2 font-medium"
+                                    >
+                                        Reply
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
