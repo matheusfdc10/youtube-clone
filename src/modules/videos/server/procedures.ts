@@ -73,7 +73,12 @@ export const videosRouter = createTRPCRouter({
                 .innerJoin(users, eq(videos.userId, users.id))
                 .leftJoin(viewerReactions, eq(viewerReactions.videoId, videos.id))
                 .leftJoin(viewerSubscriptions, eq(viewerSubscriptions.creatorId, users.id))
-                .where(eq(videos.id, videoId))
+                .where(
+                    and(
+                        eq(videos.id, videoId),
+                        eq(videos.visibility, "public"),
+                    )
+                )
                 // .groupBy(
                 //     videos.id,
                 //     users.id,
@@ -126,17 +131,83 @@ export const videosRouter = createTRPCRouter({
             })
 
             return workflowRunId;
-        }), 
-    restoreThumbnail: protectedProcedure
+        }),
+    revalidate: protectedProcedure
         .input(z.object({ id: z.string().uuid() }))
         .mutation(async ({ ctx, input }) => {
             const { id: userId } = ctx.user;
+            const { id: videoId } = input;
 
             const [existingVideo] = await db
                 .select()
                 .from(videos)
                 .where(and(
-                    eq(videos.id, input.id),
+                    eq(videos.id, videoId),
+                    eq(videos.userId, userId),
+                ))
+
+            if (!existingVideo) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                })
+            }
+
+            if (!existingVideo.muxUploadId) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                })
+            }
+            
+            const upload = await mux.video.uploads.retrieve(existingVideo.muxUploadId);
+
+            if (!upload || !upload.asset_id) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                })
+            }
+
+            const asset = await mux.video.assets.retrieve(upload.asset_id);
+
+            if (!asset) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                })
+            }
+
+            const playbackId = asset.playback_ids?.[0].id;
+            const duration = asset.duration ? Math.round(asset.duration * 1000) : 0;
+
+            // TODO:
+
+            const [updatedVideo] = await db
+                .update(videos)
+                .set({
+                    muxSttaus: asset.status,
+                    muxPlaybackId: playbackId,
+                    muxAssetId: asset.id,
+                    duration
+                })
+                .where(
+                    and(
+                        eq(videos.id, videoId),
+                        eq(videos.userId, userId),
+                    )
+                )
+                .returning();
+
+            return updatedVideo
+        }),
+    restoreThumbnail: protectedProcedure
+        .input(z.object({ id: z.string().uuid() }))
+        .mutation(async ({ ctx, input }) => {
+            const { id: userId } = ctx.user;
+            const { id: videoId } = input;
+
+            const [existingVideo] = await db
+                .select()
+                .from(videos)
+                .where(and(
+                    eq(videos.id, videoId),
                     eq(videos.userId, userId),
                 ))
 
@@ -157,7 +228,7 @@ export const videosRouter = createTRPCRouter({
                         thumbnailUrl: null,
                     })
                     .where(and(
-                        eq(videos.id, input.id),
+                        eq(videos.id, videoId),
                         eq(videos.userId, userId)
                     ))
             }

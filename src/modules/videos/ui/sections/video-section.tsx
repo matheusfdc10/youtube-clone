@@ -16,7 +16,11 @@ interface VideoSectionProps {
 export const VideoSection = ({ videoId }: VideoSectionProps) => {
     return (
         <Suspense fallback={<VideoSectionSkeleton />}>
-            <ErrorBoundary fallback={<p>Error...</p>}>
+            <ErrorBoundary fallback={
+                <div className="aspect-video border rounded-xl flex justify-center items-center">
+                    <span className="text-3xl font-bold">Error</span>
+                </div>
+            }>
                 <VideoSectionSuspense videoId={videoId}/>
             </ErrorBoundary>
         </Suspense>

@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority"
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 const avatarVariant = cva("", {
     variants: {
@@ -31,9 +32,11 @@ export const UserAvatar = ({
     onClick,
     size
 }: UserAvatarProps) => {
+    const [isLoading, setIsLoading] = useState(true)
+
     return (
-        <Avatar className={cn(avatarVariant({ size, className }))} onClick={onClick}>
-            <AvatarImage  src={imageUrl} alt={name}/>
+        <Avatar className={cn(avatarVariant({ size, className }), isLoading && "animate-pulse bg-primary/10")} onClick={onClick}>
+            <AvatarImage onLoad={() => setIsLoading(false)} src={imageUrl} alt={name}/>
         </Avatar>
     )
 }

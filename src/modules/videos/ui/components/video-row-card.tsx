@@ -1,13 +1,14 @@
 import { cva, type VariantProps } from "class-variance-authority"
 import { VideoGetManyOutOut } from "../../types"
 import Link from "next/link"
-import { VideoThumbnail } from "./video-thumbnail"
+import { VideoThumbnail, VideoThumbnailSkeleton } from "./video-thumbnail"
 import { cn } from "@/lib/utils"
 import { UserAvatar } from "@/components/user-avatar"
 import { UserInfo } from "@/modules/users/ui/components/user-info"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { VideoMenu } from "./video-menu"
 import { useMemo } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const videoRowCardVariants = cva("group flex min-w-0", {
     variants: {
@@ -136,8 +137,43 @@ export const VideoRowCard = ({
     )
 }
 
-export const VideoRowCardSkeleton = () => {
+export const VideoRowCardSkeleton = ({ size = "default" }:VariantProps<typeof videoRowCardVariants>) => {
     return (
-        <></>
+        <div className={videoRowCardVariants({ size })}>
+            <div className={thumbnailVariants({ size })} >
+                <VideoThumbnailSkeleton />
+            </div>
+
+            <div className="flex-1 min-w-0 flex gap-2">
+                <div className="flex-1 flex justify-between gap-x-2">
+                    <div
+                        className="flex-1 min-w-0 space-y-1"
+                    >
+                        <Skeleton className="w-full h-6"/>
+                        {size === "default" && (
+                           <Skeleton className="w-[40%] h-5"/>
+                        )}
+                        {size === "default" && (
+                            <>
+                                <div className="flex items-center gap-2 my-3">
+                                    <Skeleton className="w-6 h-6 rounded-full"/>
+                                    <Skeleton className="w-[50%] h-5"/>
+                                </div>
+                                <Skeleton className="w-full h-5"/>
+                            </>
+                        )}
+                        {size === "compact" && (
+                           <Skeleton className="w-[50%] h-5"/>
+                        )}
+                        {size === "compact" && (
+                            <Skeleton className="w-[40%] h-5"/>
+                        )}
+                    </div>
+                </div>
+                <div className="flex-none">
+                    <Skeleton className="w-7 h-7 rounded-full"/>
+                </div>
+            </div>
+        </div>
     )
 }
