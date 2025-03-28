@@ -19,7 +19,10 @@ export const ResultsSection = ({
     categoryId,
 }: ResultsSectionProps) => {
     return (
-        <Suspense fallback={<ResultsSectionSkeleton />}>
+        <Suspense
+            key={`${query}-${categoryId}`}
+            fallback={<ResultsSectionSkeleton />}
+        >
             <ErrorBoundary fallback={<p>Error</p>}>
                 <ResultsSectionSuspense query={query} categoryId={categoryId} />
             </ErrorBoundary>
@@ -28,23 +31,19 @@ export const ResultsSection = ({
 }
 
 const ResultsSectionSkeleton = () => {
-    const isMobile = useIsMobile();
-
     return (
         <>
-            {isMobile ? (
-                <div className="flex flex-col gap-4 gap-y-10">
-                    {Array.from({ length: 5 }).map((_,i) => (
-                        <VideoGridCardSkeleton key={i}/>
-                    ))}
-                </div>
-            ) : (
-                <div className="flex flex-col gap-4">
-                    {Array.from({ length: 5 }).map((_,i) => (
-                        <VideoRowCardSkeleton key={i}/>
-                    ))}
-                </div>
-            )}
+            <div className="hidden md:flex flex-col gap-4">
+                {Array.from({ length: 5 }).map((_,i) => (
+                    <VideoRowCardSkeleton key={i}/>
+                ))}
+            </div>
+        
+            <div className="flex flex-col gap-4    p-4 gap-y-10 pt-6 md:hidden">
+                {Array.from({ length: 5 }).map((_,i) => (
+                    <VideoGridCardSkeleton key={i}/>
+                ))}
+            </div>
         </>
     )
 }
