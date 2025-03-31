@@ -7,6 +7,7 @@ import { Loader2Icon, SquareCheckIcon, SquareIcon } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
+
 interface PlaylistAddModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
