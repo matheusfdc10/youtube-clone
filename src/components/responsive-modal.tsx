@@ -1,5 +1,5 @@
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
+import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle,  } from "./ui/drawer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 interface ResponsiveModalProps {
@@ -20,11 +20,13 @@ export const ResponsiveModal = ({
     if (isMobile) {
         return (
             <Drawer open={open} onOpenChange={onOpenChange}>
-                <DrawerContent>
+                <DrawerContent className="max-h-dvh">
                     <DrawerHeader>
                         <DrawerTitle>{title}</DrawerTitle>
                     </DrawerHeader>
-                    {children}
+                    <DrawerFooter className="overflow-x-auto">
+                        {children}
+                    </DrawerFooter>
                 </DrawerContent>
             </Drawer>
         )
@@ -32,7 +34,7 @@ export const ResponsiveModal = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-h-[90dvh] overflow-x-auto">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>

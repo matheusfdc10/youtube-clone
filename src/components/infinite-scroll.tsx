@@ -1,6 +1,7 @@
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { useEffect } from "react";
 import { Button } from "./ui/button";
+import { Loader2Icon } from "lucide-react";
 
 interface InfiniteScrollProps {
     isManual?: boolean;
@@ -30,13 +31,19 @@ export const InfiniteScroll = ({
         <div className="flex flex-col items-center gap-4 p-4">
             <div ref={targetRef} className="h-1" /> 
             {hasNextPage ? (
-                <Button
-                    variant="secondary"
-                    disabled={!hasNextPage || isFetchingNextPage}
-                    onClick={fetchNextPage}
-                >
-                    {isFetchingNextPage ? "Loading..." : "Load more"}
-                </Button>
+                isFetchingNextPage || !isManual ? (
+                    <div className="flex items-center justify-center">
+                        <Loader2Icon className="text-muted-foreground size-7 animate-spin"/>
+                    </div>
+                ) : (
+                    <Button
+                        variant="secondary"
+                        disabled={!hasNextPage}
+                        onClick={fetchNextPage}
+                    >
+                        {"Load more"}
+                    </Button>
+                )
             ) : (
                 <p className="text-xs text-muted-foreground">
                     You have reached the end of the list

@@ -26,7 +26,7 @@ const SuggestionsSectionSkeleton = () => {
     return (
         <>
             <div className="hidden md:block space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
+                {Array.from({ length: DEFAULT_LIMIT }).map((_, i) => (
                     <VideoRowCardSkeleton
                         key={i}
                         size="compact"
@@ -34,7 +34,7 @@ const SuggestionsSectionSkeleton = () => {
                 ))}
             </div>
             <div className="block md:hidden space-y-10">
-                {Array.from({ length: 5 }).map((_, i) => (
+                {Array.from({ length: DEFAULT_LIMIT }).map((_, i) => (
                     <VideoGridCardSkeleton
                         key={i}
                     />

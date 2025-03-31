@@ -43,7 +43,7 @@ const CommentsSectionSkeleton = () => {
                 <Loader2Icon className="text-muted-foreground size-7 animate-spin"/>
             </div>
             {/* <div className="flex flex-col gap-4 mt-2">
-                {Array.from({ length: 5 }).map((_,i) => (
+                {Array.from({ length: DEFAULT_LIMIT }).map((_,i) => (
                     <CommentItemSkeleton key={i}/>
                 ))}
             </div> */}

@@ -2,7 +2,47 @@ import { relations, sql } from "drizzle-orm";
 import { foreignKey, integer, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 
-export const reactionType = pgEnum("reaction_type", ["like", "dislike"])
+export const reactionType = pgEnum("reaction_type", ["like", "dislike"]);
+
+export const playlistVideos = pgTable("playlists_videos", {
+    playlistId: uuid("playlist_id").references(() => playlists.id, { onDelete: "cascade" }).notNull(),
+    videoId: uuid("video_id").references(() => videos.id, { onDelete: "cascade" }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (t) => [
+    primaryKey({
+        name: "playlist_videos_pk",
+        columns: [t.playlistId, t.videoId],
+    })
+])
+
+export const playlistVideosRelations = relations(playlistVideos, ({ one }) => ({
+    playlist: one(playlists, {
+        fields: [playlistVideos.playlistId],
+        references: [playlists.id],
+    }),
+    video: one(videos, {
+        fields: [playlistVideos.videoId],
+        references: [videos.id],
+    }),
+}))
+
+export const playlists = pgTable("playlists", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    description: text("description"),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const playlistRelations = relations(playlists, ({ one, many }) => ({
+    user: one(users, {
+        fields: [playlists.userId],
+        references: [users.id],
+    }),
+    playlistVideos: many(playlistVideos),
+}))
 
 export const users = pgTable("users", {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -26,6 +66,7 @@ export const userRelations = relations(users, ({ many }) => ({
     }),
     comments: many(comments),
     commentReactions: many(commentReactions),
+    playlists: many(playlists),
 }))
 
 export const subscriptions = pgTable("subscriptions", {
@@ -112,6 +153,7 @@ export const videosRelations = relations(videos, ({ one, many }) => ({
     views: many(videoViews),
     reactions: many(videoReactions),
     comments: many(comments),
+    playlistsVideos: many(playlistVideos),
 }))
 
 export const comments = pgTable("comments", {

@@ -40,7 +40,7 @@ const VideoSectionSkeleton = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {Array.from({ length: 5 }).map((_, index) => (
+                        {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
                             <TableRow key={index}>
                                 <TableCell className="pl-6">
                                     <div className="flex items-center gap-4">
