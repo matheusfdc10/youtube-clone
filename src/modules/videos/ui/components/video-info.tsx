@@ -35,7 +35,8 @@ export const VideoInfo = ({
                 <span 
                     className="inline-block h-fit"
                     onClickCapture={(e) => {
-                        e.stopPropagation();
+                        e.preventDefault();
+                        e.stopPropagation(); 
                         router.push(`/users/${data.user.id}`)
                     }}
                 >
@@ -43,11 +44,12 @@ export const VideoInfo = ({
                 </span>
                 <div className="min-w-0 flex-1">
                     <h3 className="font-medium line-clamp-1 lg:line-clamp-2 text-base break-words">
-                        {data.title}
+                        {data.title} sandkojsandasojkdmn
                     </h3>
                     <span className="inline-block w-fit" 
                         onClickCapture={(e) => {
-                            e.stopPropagation();
+                            e.preventDefault();
+                            e.stopPropagation(); 
                             router.push(`/users/${data.user.id}`)
                         }}
                     >
