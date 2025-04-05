@@ -44,7 +44,7 @@ export const VideoInfo = ({
                 </span>
                 <div className="min-w-0 flex-1">
                     <h3 className="font-medium line-clamp-1 lg:line-clamp-2 text-base break-words">
-                        {data.title} sandkojsandasojkdmn
+                        {data.title}
                     </h3>
                     <span className="inline-block w-fit" 
                         onClickCapture={(e) => {

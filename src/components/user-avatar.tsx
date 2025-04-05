@@ -36,7 +36,7 @@ export const UserAvatar = ({
 
     return (
         <Avatar className={cn(avatarVariant({ size, className }), isLoading && "animate-pulse bg-primary/10")} onClick={onClick}>
-            <AvatarImage onLoad={() => setIsLoading(false)} src={imageUrl} alt={name}/>
+            <AvatarImage onLoad={() => setIsLoading(false)} src={imageUrl} alt={name} className="object-cover h-auto w-auto"/>
         </Avatar>
     )
 }
