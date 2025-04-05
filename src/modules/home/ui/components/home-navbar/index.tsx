@@ -1,3 +1,5 @@
+"use client"
+
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,7 +9,7 @@ import { AuthButton } from "@/modules/auth/ui/components/auth-button";
 export const HomeNavbar = () => {
     return ( 
         <nav className="fixed top-0 left-0 right-0 h-16 bg-white flex items-center px-2 pr-5 z-50">
-            <div className="flex items-center gap-4 w-full">
+            <div className="relative flex items-center gap-4 w-full">
                 {/* Menu an Logo */}
                 <div className="flex items-center flex-shrink-0">
                     <SidebarTrigger />
@@ -20,7 +22,7 @@ export const HomeNavbar = () => {
                 </div>
 
                 {/* Search bar */}
-                <div className="flex-1 flex justify-center max-w-[720px] mx-auto">
+                <div className="flex-1 flex justify-end sm:justify-center max-w-[720px] mx-auto">
                     <SearchInput />
                 </div>
 
