@@ -53,7 +53,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
                         variant="secondary"
                         className="w-full mt-3 rounded-full"
                     >
-                        <Link href="/studio">
+                        <Link prefetch  href="/studio">
                             Go to studio
                         </Link>
                     </Button>
@@ -93,7 +93,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
                         variant="secondary"
                         className="mt-3 rounded-full"
                     >
-                        <Link href="/studio">
+                        <Link prefetch  href="/studio">
                             Go to studio
                         </Link>
                     </Button>

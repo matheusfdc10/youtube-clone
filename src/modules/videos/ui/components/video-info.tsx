@@ -31,7 +31,7 @@ export const VideoInfo = ({
 
     return (
         <div className="flex gap-3">
-            <Link href={`/videos/${data.id}`} className="flex-1 flex gap-3">
+            <Link prefetch  href={`/videos/${data.id}`} className="flex-1 flex gap-3">
                 <span 
                     className="inline-block h-fit"
                     onClickCapture={(e) => {

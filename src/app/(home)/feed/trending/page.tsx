@@ -2,7 +2,7 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { TrendingView } from "@/modules/home/ui/views/trending-view";
 import { HydrateClient, trpc } from "@/trpc/server";
 
-export const dinamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 const Page = async () => {
   void trpc.videos.getManyTrending.prefetchInfinite({
