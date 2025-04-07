@@ -1,6 +1,6 @@
 "use client"
 
-import { Sidebar, SidebarContent, SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { Sidebar, SidebarContent, SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { LogOutIcon, VideoIcon } from "lucide-react"
 import { usePathname } from "next/navigation"
@@ -9,6 +9,7 @@ import { StudioSidebarHeader } from "./studio-sidebar-header"
 
 export const StudioSidebar = () => {
     const pathname = usePathname();
+    const {setOpenMobile, isMobile } = useSidebar()
 
     return (
         <Sidebar className="pt-16 z-40" collapsible="icon">
@@ -17,7 +18,16 @@ export const StudioSidebar = () => {
                     <SidebarMenu>
                         <StudioSidebarHeader />
                         <SidebarMenuItem>
-                            <SidebarMenuButton isActive={pathname === "/studio"} tooltip="Content" asChild>
+                            <SidebarMenuButton 
+                                isActive={pathname === "/studio"}
+                                tooltip="Content"
+                                asChild
+                                onClick={() => {
+                                    if (isMobile) {
+                                        setOpenMobile(false)
+                                    }
+                                }}
+                            >
                                 <Link prefetch  href="/studio">
                                     <VideoIcon  className="size-5"/>
                                     <span className="text-sm">Content</span>
@@ -26,7 +36,10 @@ export const StudioSidebar = () => {
                         </SidebarMenuItem>
                         <Separator />
                         <SidebarMenuItem>
-                            <SidebarMenuButton tooltip="Exit studio" asChild>
+                            <SidebarMenuButton 
+                                tooltip="Exit studio"
+                                asChild
+                            >
                                 <Link prefetch  href="/">
                                     <LogOutIcon  className="size-5"/>
                                     <span className="text-sm">Exit studio</span>

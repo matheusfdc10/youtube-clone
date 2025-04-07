@@ -1,6 +1,6 @@
 "use client"
 
-import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/user-avatar"
 import { DEFAULT_LIMIT } from "@/constants"
@@ -10,12 +10,14 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 export const SubscriptionsSection = () => {
+    const {setOpenMobile, isMobile } = useSidebar()
     const pathname = usePathname()
     const { data, isLoading } = trpc.subscriptions.getMany.useInfiniteQuery({
         limit: DEFAULT_LIMIT
     }, {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
     })
+
 
     return (
         <SidebarGroup>
@@ -30,6 +32,11 @@ export const SubscriptionsSection = () => {
                                 tooltip={subscription.user.name}
                                 asChild
                                 isActive={pathname === `/users/${subscription.user.id}`}
+                                onClick={() => {
+                                    if (isMobile) {
+                                        setOpenMobile(false)
+                                    }
+                                }}
                             >
                                 <Link prefetch  href={`/users/${subscription.user.id}`} className="flex items-center gap-4">
                                     <UserAvatar
@@ -47,6 +54,11 @@ export const SubscriptionsSection = () => {
                             <SidebarMenuButton
                                 asChild
                                 isActive={pathname === "/subscriptions"}
+                                onClick={() => {
+                                    if (isMobile) {
+                                        setOpenMobile(false)
+                                    }
+                                }}
                             >
                                 <Link prefetch  href="/subscriptions" className="flex items-center gap-4">
                                     <ListIcon className="sixe-4"/>

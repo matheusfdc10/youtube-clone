@@ -1,6 +1,6 @@
 "use client"
 
-import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { useAuth, useClerk } from "@clerk/nextjs"
 import {  HistoryIcon, ListVideoIcon, ThumbsUpIcon } from "lucide-react"
 import Link from "next/link"
@@ -31,6 +31,7 @@ export const PersonalSection = () => {
     const clerk = useClerk();
     const { isSignedIn } = useAuth()
     const pathname = usePathname()
+    const {setOpenMobile, isMobile } = useSidebar()
 
     return (
         <SidebarGroup>
@@ -44,6 +45,9 @@ export const PersonalSection = () => {
                                 asChild
                                 isActive={pathname === item.url}
                                 onClick={(e) => {
+                                    if (isMobile) {
+                                        setOpenMobile(false)
+                                    }
                                     if (!isSignedIn && item.auth) {
                                         e.preventDefault();
                                         return clerk.openSignIn();

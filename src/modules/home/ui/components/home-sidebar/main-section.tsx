@@ -1,6 +1,6 @@
 "use client"
 
-import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { useAuth, useClerk } from "@clerk/nextjs"
 import { FlameIcon, HomeIcon, PlaySquareIcon } from "lucide-react"
 import Link from "next/link"
@@ -29,6 +29,7 @@ export const MainSection = () => {
     const clerk = useClerk();
     const { isSignedIn } = useAuth()
     const pathname = usePathname()
+    const {setOpenMobile, isMobile } = useSidebar()
 
     return (
         <SidebarGroup>
@@ -41,11 +42,15 @@ export const MainSection = () => {
                                 asChild
                                 isActive={pathname === item.url}
                                 onClick={(e) => {
+                                    if (isMobile) {
+                                        setOpenMobile(false)
+                                    }
                                     if (!isSignedIn && item.auth) {
                                         e.preventDefault();
                                         return clerk.openSignIn();
                                     }
                                 }}
+                                
                             >
                                 <Link prefetch  href={item.url} className="flex items-center gap-4">
                                     <item.icon />
