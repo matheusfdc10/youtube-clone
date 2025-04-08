@@ -52,6 +52,7 @@ export const SubscriptionsSection = () => {
                     {!isLoading && (
                         <SidebarMenuItem>
                             <SidebarMenuButton
+                                tooltip="All subscriptions"
                                 asChild
                                 isActive={pathname === "/subscriptions"}
                                 onClick={() => {
