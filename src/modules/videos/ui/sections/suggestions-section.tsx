@@ -70,7 +70,6 @@ const SuggestionsSectionSuspense = ({ videoId }: SuggestionsSectionProps) => {
                     <VideoRowCard
                         key={video.id}
                         data={video}
-                        onRemove={() => {}}
                         size="compact"
                     />
                 ))}
@@ -80,7 +79,6 @@ const SuggestionsSectionSuspense = ({ videoId }: SuggestionsSectionProps) => {
                     <VideoGridCard
                         key={video.id}
                         data={video}
-                        onRemove={() => {}}
                     />
                 ))}
             </div>
